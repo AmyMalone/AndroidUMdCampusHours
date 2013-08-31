@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
 	private static GoogleMap mMap;
 	private static Calendar calendar;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -97,6 +98,10 @@ public class MainActivity extends Activity {
 		}
 		
 		//set strange openings/closings (start/end semester, thanksgiving)
+		if(calendar.get(Calendar.DATE)==1||calendar.get(Calendar.DATE)==2){
+			mark251.setSnippet("CLOSED until Sept 3 at 5:30");
+			return;
+		}
 		
 		//normal semester days
 		if(day==Calendar.SUNDAY || day==Calendar.SATURDAY ||
@@ -122,6 +127,7 @@ public class MainActivity extends Activity {
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		int minute = calendar.get(Calendar.MINUTE);
+		int date = calendar.get(Calendar.DATE);
 		boolean halfOpen = false;
 		
 		//setting half hour
@@ -133,6 +139,42 @@ public class MainActivity extends Activity {
 		}
 			
 		//set strange openings/closings (starting school, thanksgiving, end of semester)
+		if (date==1){
+			if(hour<10){
+				markSouthDiner.setSnippet("Closed until 10 am");
+				return;
+			}else if(hour>= 10 && hour <20){
+				markSouthDiner.setSnippet("Open until 8 pm");
+				return;
+			}else{
+				markSouthDiner.setSnippet("Closed until 10 am");
+				return;
+			}
+			
+		}else if(date ==2){
+			if(hour<10){
+				markSouthDiner.setSnippet("Closed until 10 am");
+				return;
+			}else if(hour>= 10 && hour <20){
+				markSouthDiner.setSnippet("Open until 8 pm");
+				return;
+			}else{
+				markSouthDiner.setSnippet("Closed until 7:30 am");
+				return;
+			}
+		}else if(date ==3||date==4||date==5||date==6){//special closing on 6th
+			if(hour<=7 && halfOpen==false){
+				markSouthDiner.setSnippet("Closed until 7:30 am");
+				return;
+			}else if(hour>=7 && halfOpen==true && hour <20){
+				markSouthDiner.setSnippet("Open until 8 pm");
+				return;
+			}else{
+				markSouthDiner.setSnippet("Closed until 7:30 am");
+				return;
+			}
+		}
+		
 		
 		//normal semester days
 		if(day==Calendar.FRIDAY){
@@ -175,6 +217,41 @@ public class MainActivity extends Activity {
 			halfOpen = true;
 		}
 		//set strange openings/closings (starting school, thanksgiving, end of semester)
+		if (day==1){
+			if(hour<10){
+				markNorthDiner.setSnippet("Closed until 10 am");
+				return;
+			}else if(hour>= 10 && hour <20){
+				markNorthDiner.setSnippet("Open until 8 pm");
+				return;
+			}else{
+				markNorthDiner.setSnippet("Closed until 10 am");
+				return;
+			}
+			
+		}else if(day ==2){
+			if(hour<10){
+				markNorthDiner.setSnippet("Closed until 10 am");
+				return;
+			}else if(hour>= 10 && hour <20){
+				markNorthDiner.setSnippet("Open until 8 pm");
+				return;
+			}else{
+				markNorthDiner.setSnippet("Closed until 7:30 am");
+				return;
+			}
+		}else if(day ==3||day==4||day==5||day==6){//special closing on 6th
+			if(hour<=7 && halfOpen==false){
+				markNorthDiner.setSnippet("Closed until 7:30 am");
+				return;
+			}else if(hour>=7 && halfOpen==true && hour <20){
+				markNorthDiner.setSnippet("Open until 8 pm");
+				return;
+			}else{
+				markNorthDiner.setSnippet("Closed until 7:30 am");
+				return;
+			}
+		}
 		
 		//normal semester days
 		if(day==Calendar.FRIDAY){
@@ -210,15 +287,33 @@ public class MainActivity extends Activity {
 		Marker markMcKeldin = mMap.addMarker(new MarkerOptions()
         .position(new LatLng(38.98594,  -76.94512))
         .title("McKeldin"));
+		int day = calendar.get(Calendar.DAY_OF_WEEK);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		
 		//set strange openings/closings (starting school, thanksgiving, end of semester)
 		if(calendar.get(Calendar.DATE)==1||calendar.get(Calendar.DATE)==2){
 			markMcKeldin.setSnippet("CLOSED");
-		}else{
-			markMcKeldin.setSnippet("update hours when available");
+			return;
 		}
 		
 		//normal semester days
+		if(day==Calendar.SUNDAY){
+			String opClTimes = (hour<11)?"Closed until 11am":"Open until Friday 8pm"; 
+			markMcKeldin.setSnippet(opClTimes); 		
+		}else if(day==Calendar.SATURDAY){
+			if(hour<10){
+				markMcKeldin.setSnippet("Closed until 10 am");
+			}else if(hour>20){
+				markMcKeldin.setSnippet("Closed until 11 am Sunday");
+			}else{
+				markMcKeldin.setSnippet("Open until 8 pm");
+			}	
+		}else if(day==Calendar.FRIDAY){
+			String opClTimes = (hour<20)?"Open until 8pm":"Closed until 10 am Saturday"; 
+			markMcKeldin.setSnippet(opClTimes);	
+		}else{
+			markMcKeldin.setSnippet("Open until Friday at 8 pm");
+		}
 		
 	}
 	
@@ -229,37 +324,45 @@ public class MainActivity extends Activity {
 		
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
 		
-		//set strange openings/closings (starting school, thanksgiving, end of semester)
+		//setting half hour
+		boolean halfOpen = false;
+		if(hour==0){
+			halfOpen = true;
+		}else if(hour ==1 && minute<30){
+			halfOpen = true;
+		}
+		
+		//normal semester days
 		if(day==Calendar.SUNDAY){
-			if(hour<11){
+			if(hour<= 1 && halfOpen){
+				markStamp.setSnippet("Open until 1:30 am");
+				return;
+			}else if(hour<11){
 				markStamp.setSnippet("Closed until 11 am");
-			}else if(hour<=18){
-				markStamp.setSnippet("Closed until 7 am");
 			}else{
-				markStamp.setSnippet("Open until 6 pm");
+				markStamp.setSnippet("Open until midnight");
 			}			
 		}else if(day==Calendar.SATURDAY){
-			if(hour<10){
-				markStamp.setSnippet("Closed until 10 am");
-			}else if(hour<=18){
-				markStamp.setSnippet("Closed until 11 am");
+			if(hour<= 1 && halfOpen){
+				markStamp.setSnippet("Open until 1:30 am");
+				return;
+			}else if(hour<8){
+				markStamp.setSnippet("Closed until 8 am");
 			}else{
-				markStamp.setSnippet("Open until 6 pm");
+				markStamp.setSnippet("Open until 1:30 am");
 			}
 		}else{//mon, tues, wed, thurs, fri
 			if(hour<7){
 				markStamp.setSnippet("Closed until 7 am");
-			}else if(hour<=22){
-				String setSnip = day ==Calendar.FRIDAY?"Closed until 10 am":"Closed until 7 am";
-				markStamp.setSnippet(setSnip);
 			}else{
-				markStamp.setSnippet("Open until 10 pm");
+				String setSnip = (day==Calendar.FRIDAY)?"Open until 1:30am":"Open until midnight";
+				markStamp.setSnippet(setSnip);
 			}
 		}
+	
 		
-		
-		//normal semester days
 	}
 	
 	private static void markEppley(){
@@ -267,9 +370,33 @@ public class MainActivity extends Activity {
         .position(new LatLng(38.993563,  -76.945077))
         .title("Eppley"));
 		
+		int day = calendar.get(Calendar.DAY_OF_WEEK);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		
 		//set strange openings/closings (starting school, thanksgiving, end of semester)
-		markEppley.setSnippet("update hours when available");
+		if(calendar.get(Calendar.DATE)==1||calendar.get(Calendar.DATE)==2){
+			String epOpen = hour<10?"Closed until 10 am":"Open until midnight";
+			markEppley.setSnippet(epOpen);
+			return;
+		}
+		
 		//normal semester days
+		if(day == Calendar.SATURDAY){
+			if(hour<8){
+				markEppley.setSnippet("Closed until 8 am");	
+			}else if(hour>20){		
+				markEppley.setSnippet("Closed until 10 am");	
+			}else{
+				markEppley.setSnippet("Open until 10 pm");
+			}
+		}else if(day == Calendar.SUNDAY){
+			String epOpen = hour<10?"Closed until 10 am":"Open until midnight";
+			markEppley.setSnippet(epOpen);			
+		}else{
+			String epOpen = hour<6?"Closed until 6 am":"Open until midnight";
+			markEppley.setSnippet(epOpen);	
+		}
+		
 	}
 	
 	
